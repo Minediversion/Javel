@@ -25,6 +25,7 @@ import java.util.Random;
 
 //TODO: Script Upload (Update Dashboard with upload) (TOP PRIORITY)
 //TODO: Problem Browser
+//TODO: Fix Aspect Ratio
 
 public class JutgeToolWindow implements ToolWindowFactory {
     @Override
@@ -97,24 +98,29 @@ public class JutgeToolWindow implements ToolWindowFactory {
             button.setEnabled(true);
         }
 
-        private void searchProblem(JTextField problemId, ToolWindow toolWindow, JButton button){
+        private String curProblemId = "";
+        private List<String> problemStats = new ArrayList<>();
+
+        private void searchProblem(JTextField problemId, ToolWindow toolWindow, JButton button, JButton uploadButton){
             button.setText("Loading...");
             button.setEnabled(false);
+            uploadButton.setEnabled(false);
             try {
-                List<String> problemStats = net.getProblem(Files.readString(net.cookiePath), problemId.getText(), toolWindow);
+                problemStats = net.getProblem(Files.readString(net.cookiePath), problemId.getText(), toolWindow);
                 if(problemStats == null) {
+                    curProblemId = "";
                     problemViewer.setText("");
                     problemViewer.setVisible(false);
                     jScrollPane.setVisible(false);
+                    button.setText("GO!");
+                    button.setEnabled(true);
                     return;
                 }else if(problemId.getText().charAt(0) == 'P') {
                     problemViewer.setText(String.format(problem[0],
                             problemStats.get(0),//Problem Title
                             problemStats.get(1),//Problem Status
-                            problemStats.get(2),//Summary
-                            problemStats.get(3),//Expected Input
-                            problemStats.get(4),//Expected Output
-                            problemStats.get(5)//Public Test Cases
+                            problemStats.get(2),//Summary/Expected I/O
+                            problemStats.get(3)//Public Test Cases
                     ));
                 }else{
                     problemViewer.setText(String.format(problem[1],
@@ -124,19 +130,33 @@ public class JutgeToolWindow implements ToolWindowFactory {
                             problemStats.get(3)//Sample Session
                     ));
                 }
+                curProblemId = problemId.getText();
                 jScrollPane.setVisible(true);
                 problemViewer.setVisible(true);
+                uploadButton.setEnabled(true);
+                button.setText("GO!");
+                button.setEnabled(true);
             }catch (IOException e){
                 throw new RuntimeException(e);
             }
-            button.setText("GO!");
-            button.setEnabled(true);
         }
 
-        private void uploadFile(ToolWindow toolWindow) {
-            Document document = FileEditorManager.getInstance(toolWindow.getProject()).getSelectedTextEditor().getDocument();
-            VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
-            System.out.println(virtualFile.getPath());
+        private void uploadFile(ToolWindow toolWindow, JButton uploadButton) {
+            try {
+                uploadButton.setText("Uploading...");
+                uploadButton.setEnabled(false);
+                Document document = FileEditorManager.getInstance(toolWindow.getProject()).getSelectedTextEditor().getDocument();
+                VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+                if(virtualFile == null){
+                    JutgeNotificationHandler.notifyInfo(toolWindow.getProject(), "No file selected");
+                    return;
+                }
+                net.sendFile(Files.readString(net.cookiePath), curProblemId, virtualFile, problemStats.get(4), toolWindow);
+                uploadButton.setText("Upload Current File");
+                uploadButton.setEnabled(true);
+            }catch (IOException e){
+                throw new RuntimeException(e);
+            }
         }
 
         //Creation
@@ -172,11 +192,12 @@ public class JutgeToolWindow implements ToolWindowFactory {
             JTextField problemId = new JTextField();
             JButton idSearch = new JButton("GO!");
             JButton upload = new JButton("Upload Current File");
+            upload.setEnabled(false);
             idTextField.setLayout(new BoxLayout(idTextField, BoxLayout.X_AXIS));
             problemId.setAlignmentX(Component.LEFT_ALIGNMENT);
             idSearch.setAlignmentX(Component.RIGHT_ALIGNMENT);
-            upload.addActionListener(e -> uploadFile(toolWindow));
-            idSearch.addActionListener(e -> searchProblem(problemId, toolWindow, idSearch));
+            upload.addActionListener(e -> uploadFile(toolWindow, upload));
+            idSearch.addActionListener(e -> searchProblem(problemId, toolWindow, idSearch, upload));
             idTextField.add(problemId);
             idTextField.add(idSearch);
 
@@ -344,12 +365,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
                 <html><head></head><body>\t\t\t\t\t
                 \t\t\t\t\t\t<strong><h1>%s - %s</h1></strong>
                 \t\t\t\t\t\t<hr class="solid"><br>
-                \t\t\t\t\t\t<p1>%s</p1><br>
-                \t\t\t\t\t\t<h2>Expected Input</h2>
-                \t\t\t\t\t\t<p1>%s</p1>
-                \t\t\t\t\t\t<h2>Expected Output</h2>
-                \t\t\t\t\t\t<p1>%s</p1>
-                \t\t\t\t\t\t<h2>Public test case</h2>
+                \t\t\t\t\t\t<p>%s</p>
                 \t\t\t\t\t\t<table>
                 \t\t\t\t\t\t<tbody><tr>
                 \t\t\t\t\t\t\t<th>Input</th>
