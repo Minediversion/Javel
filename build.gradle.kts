@@ -38,6 +38,10 @@ tasks {
         kotlinOptions.jvmTarget = "17"
     }
 
+    buildPlugin{
+        archiveBaseName.set("Javel")
+    }
+
     patchPluginXml {
         sinceBuild.set("222")
         untilBuild.set("232.*")
