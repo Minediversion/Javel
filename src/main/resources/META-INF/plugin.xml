@@ -26,7 +26,8 @@
                     id="Jutge"
                     secondary="false"
                     anchor="right"
-                    icon="AllIcons.Toolwindows.WebToolWindow"/>
+                    icon="AllIcons.Toolwindows.WebToolWindow"
+                        canCloseContents="true"/>
         <notificationGroup displayType="BALLOON" id="Jutge Notification"/>
     </extensions>
 </idea-plugin>
