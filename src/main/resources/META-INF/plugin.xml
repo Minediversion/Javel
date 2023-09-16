@@ -13,7 +13,14 @@
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-    <description>An implementation for Jutge.org in IntelliJ Based IDEs</description>
+    <description><![CDATA[
+        <p>An implementation for Jutge.org in IntelliJ Based IDEs.</p>
+        <p>(Plugin is based in gavel for Visual Studio by Plopez(Special Thanks to him))</p>
+        <p>For more information visit:</p>
+        <p><a href="https://github.com/Minediversion/Javel">Javel by Minediversion GitHub Repository</a>.</p>
+        <p><a href="https://github.com/plopez01/gavel">Gavel by Plopez GitHub Repository</a>.</p>
+        ]]>
+    </description>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
@@ -26,7 +33,7 @@
                     id="Jutge"
                     secondary="false"
                     anchor="right"
-                    icon="AllIcons.Toolwindows.WebToolWindow"
+                    icon="AllIcons.Toolwindows.ToolWindowBuild"
                         canCloseContents="true"/>
         <notificationGroup displayType="BALLOON" id="Jutge Notification"/>
     </extensions>

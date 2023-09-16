@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.List;
 import java.util.Timer;
 
-//TODO: Add Jutge Logo and Plugin description
+//TODO: Add License and ReadMe.md
 
 public class JutgeToolWindow implements ToolWindowFactory {
     @Override
@@ -403,7 +403,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
                 body = body.replace("<span class='label label-danger'>",
                         "<span class='label label-danger' style='color: red; font-weight: bold'>");
                 body = body.replace("<span class='label label-primary'>",
-                        "<span class='label label-primary' style='color: blue; font-weight: bold'>");
+                        "<span class='label label-primary' style='color: #1E90FF; font-weight: bold'>");
                 body = body.replace("<a",
                         "<a style='color: white; font-weight: bold'");
                 problemListViewer.setText(body);
