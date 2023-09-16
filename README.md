@@ -5,8 +5,9 @@ Especially useful for anyone that wants an uglier, but faster way to access and 
 
 ## Special Thanks
 
-This plugin is based on the Gavel for Visual Studio by Plopez.
-Plopez was a great source of knowledge and inspiration.
+This plugin is based on the [Gavel](https://github.com/plopez01/gavel) for Visual Studio plugin by Plopez.  
+Plopez was a great source of knowledge and inspiration.  
+
 
 ## Features
 
