@@ -151,15 +151,23 @@ public class net {
                     JutgeNotificationHandler.notifyInfo(toolWindow.getProject(), "Quiz are not supported");
                     return null;
                 }
-                if(problemId.charAt(0) == 'P') {
-                    problemStats.add(body.split("</title>")[0].split(" - ")[2]); //Title
+                problemStats.add(body.split("</title>")[0].split(" - ")[2]); //Title
+                if(body.contains("Not tried")){
+                    problemStats.add(body.split("<div class='panel-heading'>\n" +
+                            "                    Problem ")[1]
+                            .split("""
+                                    </div>
+                                                    <div class='panel-body'>""")[0]
+                            .split(": ")[1]);//Status
+                }else{
                     problemStats.add(body.split("<div class='panel-heading'>\n" +
                             "                Problem ")[1]
                             .split("""
                                     </div>
-                                                <div class='panel-body'>
-                                                    <table>""")[0]
+                                                <div class='panel-body'>""")[0]
                             .split(": ")[1]);//Status
+                }
+                if(problemId.charAt(0) == 'P') {
                     problemStats.add(body.split("<!--HEVEA command line is: hevea html.tex -->\n" +
                             "<!--CUT STYLE article--><!--CUT DEF section 1 --><p>")[1].split("</p><!--CUT END -->\n" +
                             "<!--HTMLFOOT-->\n" +
@@ -171,14 +179,6 @@ public class net {
                                     "                </div>\n" +
                                     "            </div>")[0]);//Public Test Case
                 }else{
-                    problemStats.add(body.split("</title>")[0].split(" - ")[2]); //Title
-                    problemStats.add(body.split("<div class='panel-heading'>\n" +
-                            "                Problem ")[1]
-                            .split("""
-                                    </div>
-                                                <div class='panel-body'>
-                                                    <table>""")[0]
-                            .split(": ")[1]);//Status
                     problemStats.add(body.split("<!--CUT STYLE article--><!--CUT DEF section 1 -->")[1]
                             .split("""
                                     <!--CUT END -->
@@ -333,6 +333,48 @@ public class net {
                         .split("</div>\n" +
                                 "            </div>", 2)[0]);//Analysis
                 return submissionStats;
+            }else JutgeNotificationHandler.notifyError(toolWindow.getProject(), "Http Error");
+            return null;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("KotlinInternalInJava")
+    public static String getProblemList(String cookie, ToolWindow toolWindow) {
+        try {
+            HttpUrl url = HttpUrl.parse("https://jutge.org/problems");
+
+            CookieManager cookieManager = new CookieManager();
+            cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+            CookieJar cookieJar = new JavaNetCookieJar(cookieManager);
+            List<Cookie> list = new ArrayList<>();
+            list.add(Cookie.parse(url, cookie));
+            cookieJar.saveFromResponse(url, list);
+            cookieJar.loadForRequest(url);
+
+            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+                @Override
+                public void log(@NotNull String message) {
+                    //System.out.println(message);
+                }
+            });
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+            OkHttpClient client = new OkHttpClient().newBuilder()
+                    .cookieJar(cookieJar)
+                    .addInterceptor(interceptor)
+                    .build();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .get()
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            if(response.body() != null){
+                String body = response.body().string();
+                return body.split("<div class='panel panel-default'>")[1].split("</table>\n" +
+                        "                </div>")[0];
             }else JutgeNotificationHandler.notifyError(toolWindow.getProject(), "Http Error");
             return null;
         } catch (IOException e) {

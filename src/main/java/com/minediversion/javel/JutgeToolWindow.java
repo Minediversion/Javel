@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.List;
 import java.util.Timer;
 
-//TODO: Problem Browser
+//TODO: Add Jutge Logo and Plugin description
 
 public class JutgeToolWindow implements ToolWindowFactory {
     @Override
@@ -65,6 +65,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
                             case 0 -> setupMain(toolWindow, false);
                             case 1 -> contentPanel.add(DashBoardPanel(dashboard), BorderLayout.PAGE_START);
                             case 2 -> contentPanel.add(ProblemsPanel(toolWindow), BorderLayout.PAGE_START);
+                            case 3 -> contentPanel.add(ProblemsListPanel(toolWindow), BorderLayout.PAGE_START);
                         }
                     }
                 }else startLogin(toolWindow);
@@ -114,8 +115,9 @@ public class JutgeToolWindow implements ToolWindowFactory {
             button.setEnabled(false);
             uploadButton.setEnabled(false);
             compilerSelector.setEnabled(false);
+            System.out.println(problemId.getText().trim());
             try {
-                problemStats = net.getProblem(Files.readString(net.cookiePath), problemId.getText(), toolWindow);
+                problemStats = net.getProblem(Files.readString(net.cookiePath), problemId.getText().trim(), toolWindow);
                 if(problemStats == null) {
                     curProblemId = "";
                     problemViewer.setText("");
@@ -124,7 +126,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
                     button.setText("GO!");
                     button.setEnabled(true);
                     return;
-                }else if(problemId.getText().charAt(0) == 'P') {
+                }else if(problemId.getText().trim().charAt(0) == 'P') {
                     problemViewer.setText(String.format(problemHtml[0],
                             problemStats.get(0),//Problem Title
                             problemStats.get(1),//Problem Status
@@ -142,7 +144,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
                 for(int i = 5; i < problemStats.size(); i++){
                     compilerSelector.addItem(problemStats.get(i));
                 }
-                curProblemId = problemId.getText();
+                curProblemId = problemId.getText().trim();
                 jScrollPane.setVisible(true);
                 problemViewer.setVisible(true);
                 compilerSelector.setEnabled(true);
@@ -212,7 +214,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
             jScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
             jScrollPane.setMinimumSize(new Dimension(10, 10));
-            int height = (int) (Toolkit.getDefaultToolkit().getScreenSize().height*0.50);
+            int height = (int) (Toolkit.getDefaultToolkit().getScreenSize().height*0.55);
             jScrollPane.setPreferredSize(new Dimension(1920, height));
             jScrollPane.setMaximumSize(new Dimension(1920, height));
 
@@ -279,7 +281,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
             jScrollPaneSub.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             jScrollPaneSub.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
             jScrollPaneSub.setMinimumSize(new Dimension(10, 10));
-            int height = (int) (Toolkit.getDefaultToolkit().getScreenSize().height*0.50);
+            int height = (int) (Toolkit.getDefaultToolkit().getScreenSize().height*0.55);
 
             jScrollPaneSub.setPreferredSize(new Dimension(1920, height));
             jScrollPaneSub.setMaximumSize(new Dimension(1920, height));
@@ -367,6 +369,53 @@ public class JutgeToolWindow implements ToolWindowFactory {
             return dashboardPanel;
         }
 
+        private JPanel ProblemsListPanel(ToolWindow toolWindow) {
+            JPanel problemsListPanel = new JPanel();
+
+            JEditorPane problemListViewer = new JEditorPane();
+            JBScrollPane jScrollPaneList = new JBScrollPane(problemListViewer);
+            jScrollPaneList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            jScrollPaneList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            jScrollPaneList.setMinimumSize(new Dimension(10, 10));
+            int height = (int) (Toolkit.getDefaultToolkit().getScreenSize().height * 0.55);
+
+            jScrollPaneList.setPreferredSize(new Dimension(1920, height));
+            jScrollPaneList.setMaximumSize(new Dimension(1920, height));
+
+            problemsListPanel.setLayout(new BoxLayout(problemsListPanel, BoxLayout.Y_AXIS));
+
+            problemListViewer.setContentType("text/html");
+            problemListViewer.setEditable(false);
+            problemListViewer.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            try{
+                String body = String.format(problemsListHtml, net.getProblemList(Files.readString(net.cookiePath), toolWindow));
+                body = body.replace("<i class='fa fa-thumbs-o-up fa-fw' style='color: green;'></i>",
+                        "<a style='color: green; font-weight:bold'>O</a>");
+                body = body.replace("<i class='fa fa-gavel fa-fw' style='color: DarkOrange;'></i>",
+                        "<a style='color: orange; font-weight:bold'>/</a>");
+                body = body.replace("<i class='fa fa-thumbs-o-down fa-fw' style='color: red;'></i>",
+                        "<a style='color: red; font-weight:bold'>X</a>");
+                body = body.replace("<span class='label label-success'>",
+                        "<span class='label label-success' style='color: green; font-weight: bold'>");
+                body = body.replace("<span class='label label-danger '>",
+                        "<span class='label label-danger ' style='color: red; font-weight: bold'>");
+                body = body.replace("<span class='label label-danger'>",
+                        "<span class='label label-danger' style='color: red; font-weight: bold'>");
+                body = body.replace("<span class='label label-primary'>",
+                        "<span class='label label-primary' style='color: blue; font-weight: bold'>");
+                body = body.replace("<a",
+                        "<a style='color: white; font-weight: bold'");
+                problemListViewer.setText(body);
+            }catch(IOException e){
+                throw new RuntimeException(e);
+            }
+
+            problemsListPanel.add(jScrollPaneList);
+
+            return problemsListPanel;
+        }
+
         private JPanel LogInPanel(ToolWindow toolWindow){
             JPanel LogInPanel = new JPanel();
 
@@ -432,12 +481,6 @@ public class JutgeToolWindow implements ToolWindowFactory {
         //--------------------------------------------------------------------------------------------------------------
         private JLabel getFortune(){
             JLabel fortune = new JLabel(this.fortune[new Random(System.currentTimeMillis()).nextInt(9)], SwingConstants.CENTER);
-            for(String fontName : GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()){
-                Font f = new Font(fontName, Font.ITALIC, 10);
-                if(f.canDisplayUpTo(fortune.getText())<0){
-                    System.out.println(fontName);
-                }
-            }
             fortune.setFont(new Font("Arial", Font.ITALIC, 11));
             fortune.setForeground(Color.YELLOW);
             fortune.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -450,9 +493,13 @@ public class JutgeToolWindow implements ToolWindowFactory {
                     .createContent(new JutgeToolContent(toolWindow, 1).getContentPanel(), "Dashboard", false);
             Content content1 = ContentFactory.getInstance()
                     .createContent(new JutgeToolContent(toolWindow, 2).getContentPanel(), "Problem", false);
+            Content content2 = ContentFactory.getInstance()
+                    .createContent(new JutgeToolContent(toolWindow, 3).getContentPanel(), "Problem List", false);
             content.setCloseable(false);
             content1.setCloseable(false);
+            content2.setCloseable(false);
             tabs.addContent(content);
+            tabs.addContent(content2);
             tabs.addContent(content1);
             if(deleteLogInTab) tabs.removeContent(tabs.getContent(0), true);
         }
@@ -491,6 +538,14 @@ public class JutgeToolWindow implements ToolWindowFactory {
         public JPanel getContentPanel(){
             return contentPanel;
         }
+
+        private final String problemsListHtml = """
+                <html><head></head><body class="activity-stream">
+                				<div class='panel panel-default'>
+                				    %s
+                				    </tbody></table>
+                				</div>
+                </body></html>""";
 
         private final String submissionHtml = """
                 <html><head></head><body class="activity-stream">
