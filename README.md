@@ -3,7 +3,7 @@
 Javel is an IntelliJ Based IDEs extension that provides integration for the Jutge.org coding website.  
 Especially useful for anyone that wants an uglier, but faster way to access and do Jutge.org's problems.
 
-##Special Thanks
+## Special Thanks
 
 This plugin is based on the Gavel for Visual Studio by Plopez.
 Plopez was a great source of knowledge and inspiration.
