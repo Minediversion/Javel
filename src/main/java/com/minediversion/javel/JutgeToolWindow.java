@@ -188,6 +188,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
                 }
                 uploadButton.setText("Upload Current File");
                 uploadButton.setEnabled(true);
+                updateProblemsList(toolWindow);
             }catch (IOException e){
                 throw new RuntimeException(e);
             }
@@ -369,25 +370,10 @@ public class JutgeToolWindow implements ToolWindowFactory {
             return dashboardPanel;
         }
 
-        private JPanel ProblemsListPanel(ToolWindow toolWindow) {
-            JPanel problemsListPanel = new JPanel();
+        private final JEditorPane problemListViewer = new JEditorPane();
+        private final JBScrollPane jScrollPaneList = new JBScrollPane(problemListViewer);
 
-            JEditorPane problemListViewer = new JEditorPane();
-            JBScrollPane jScrollPaneList = new JBScrollPane(problemListViewer);
-            jScrollPaneList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-            jScrollPaneList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            jScrollPaneList.setMinimumSize(new Dimension(10, 10));
-            int height = (int) (Toolkit.getDefaultToolkit().getScreenSize().height * 0.55);
-
-            jScrollPaneList.setPreferredSize(new Dimension(1920, height));
-            jScrollPaneList.setMaximumSize(new Dimension(1920, height));
-
-            problemsListPanel.setLayout(new BoxLayout(problemsListPanel, BoxLayout.Y_AXIS));
-
-            problemListViewer.setContentType("text/html");
-            problemListViewer.setEditable(false);
-            problemListViewer.setAlignmentX(Component.CENTER_ALIGNMENT);
-
+        public void updateProblemsList(ToolWindow toolWindow){
             try{
                 String body = String.format(problemsListHtml, net.getProblemList(Files.readString(net.cookiePath), toolWindow));
                 body = body.replace("<i class='fa fa-thumbs-o-up fa-fw' style='color: green;'></i>",
@@ -410,6 +396,26 @@ public class JutgeToolWindow implements ToolWindowFactory {
             }catch(IOException e){
                 throw new RuntimeException(e);
             }
+        }
+
+        private JPanel ProblemsListPanel(ToolWindow toolWindow) {
+            JPanel problemsListPanel = new JPanel();
+
+            jScrollPaneList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            jScrollPaneList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            jScrollPaneList.setMinimumSize(new Dimension(10, 10));
+            int height = (int) (Toolkit.getDefaultToolkit().getScreenSize().height * 0.55);
+
+            jScrollPaneList.setPreferredSize(new Dimension(1920, height));
+            jScrollPaneList.setMaximumSize(new Dimension(1920, height));
+
+            problemsListPanel.setLayout(new BoxLayout(problemsListPanel, BoxLayout.Y_AXIS));
+
+            problemListViewer.setContentType("text/html");
+            problemListViewer.setEditable(false);
+            problemListViewer.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            updateProblemsList(toolWindow);
 
             problemsListPanel.add(jScrollPaneList);
 
