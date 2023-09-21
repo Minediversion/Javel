@@ -197,6 +197,8 @@ public class net {
                         .split("' />\n" +
                                 "                            <button id='submit' name='submit' type='btn' class='btn btn-block btn-primary btn-sm btn-center'>")[0]);
                 //token_uid
+                problemStats.add(body.split("<form class='form-horizontal' action='")[1]
+                        .split("' method='post' role='form' enctype='multipart/form-data'>")[0]); //ProblemId
                 //CompilerOptions
                 //------------------------------------------------------------------------------------------------------
                 int index = body.indexOf("</option>");
@@ -216,7 +218,7 @@ public class net {
     @SuppressWarnings("KotlinInternalInJava")
     public static String sendFile(String cookie, String problemId, VirtualFile virtualFile, String uploadToken, String compilerId, ToolWindow toolWindow) {
         try {
-            HttpUrl url = HttpUrl.parse("https://jutge.org/problems/"+problemId+"/submissions");
+            HttpUrl url = HttpUrl.parse("https://jutge.org"+problemId);
 
             CookieManager cookieManager = new CookieManager();
             cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);

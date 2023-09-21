@@ -141,10 +141,10 @@ public class JutgeToolWindow implements ToolWindowFactory {
                             problemStats.get(3)//Sample Session
                     ));
                 }
-                for(int i = 5; i < problemStats.size(); i++){
+                for(int i = 6; i < problemStats.size(); i++){
                     compilerSelector.addItem(problemStats.get(i));
                 }
-                curProblemId = problemId.getText().trim();
+                curProblemId = problemStats.get(5);
                 jScrollPane.setVisible(true);
                 problemViewer.setVisible(true);
                 compilerSelector.setEnabled(true);
