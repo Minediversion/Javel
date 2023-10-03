@@ -278,7 +278,7 @@ public class net {
     @SuppressWarnings("KotlinInternalInJava")
     public static List<String> getSubmission(String cookie, String problemId, String submission, ToolWindow toolWindow){
         try {
-            HttpUrl url = HttpUrl.parse("https://jutge.org/problems/"+problemId+"/submissions/"+submission);
+            HttpUrl url = HttpUrl.parse("https://jutge.org" + problemId + "/" + submission);
 
             CookieManager cookieManager = new CookieManager();
             cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
@@ -291,7 +291,7 @@ public class net {
             HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
                 @Override
                 public void log(@NotNull String message) {
-                    //System.out.println(message);
+                    System.out.println(message);
                 }
             });
             interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
