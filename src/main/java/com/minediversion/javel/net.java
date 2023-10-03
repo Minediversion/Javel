@@ -173,11 +173,15 @@ public class net {
                             "<!--HTMLFOOT-->\n" +
                             "<!--ENDHTML-->\n" +
                             "<!--FOOTER-->")[0]);//Summary/Expected I/O
-                    problemStats.add(body.split("<div class='list-group'>")[1]
-                            .split("</li>\n" +
-                                    "            \n" +
-                                    "                </div>\n" +
-                                    "            </div>")[0]);//Public Test Case
+                    try {
+                        problemStats.add(body.split("<div class='list-group'>")[1]
+                                .split("</li>\n" +
+                                        "            \n" +
+                                        "                </div>\n" +
+                                        "            </div>")[0]);//Public Test Case
+                    }catch (ArrayIndexOutOfBoundsException e){
+                        problemStats.add("");
+                    }
                 }else{
                     problemStats.add(body.split("<!--CUT STYLE article--><!--CUT DEF section 1 -->")[1]
                             .split("""
