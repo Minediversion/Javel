@@ -183,7 +183,7 @@ public class net {
                         problemStats.add("");
                     }
                 }else{
-                    problemStats.add(body.split("<!--CUT STYLE article--><!--CUT DEF section 1 -->")[1]
+                    problemStats.add(body.split("<!--CUT DEF section 1 -->")[1]
                             .split("""
                                     <!--CUT END -->
                                     <!--HTMLFOOT-->

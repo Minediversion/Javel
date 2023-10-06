@@ -64,7 +64,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
                         switch (mainId) {
                             case 0 -> setupMain(toolWindow, false);
                             case 1 -> contentPanel.add(DashBoardPanel(dashboard), BorderLayout.PAGE_START);
-                            case 2 -> contentPanel.add(ProblemsPanel(toolWindow), BorderLayout.PAGE_START);
+                            case 2 -> contentPanel.add(ProblemsPanel(toolWindow, problemListViewer), BorderLayout.PAGE_START);
                             case 3 -> contentPanel.add(ProblemsListPanel(toolWindow), BorderLayout.PAGE_START);
                         }
                     }
@@ -141,6 +141,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
                             problemStats.get(3)//Sample Session
                     ));
                 }
+                compilerSelector.removeAllItems();
                 for(int i = 6; i < problemStats.size(); i++){
                     compilerSelector.addItem(problemStats.get(i));
                 }
@@ -156,7 +157,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
             }
         }
 
-        private void uploadFile(ToolWindow toolWindow, JButton uploadButton) {
+        private void uploadFile(ToolWindow toolWindow, JButton uploadButton, JEditorPane problemListViewerCarry) {
             try {
                 uploadButton.setText("Uploading...");
                 uploadButton.setEnabled(false);
@@ -188,7 +189,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
                 }
                 uploadButton.setText("Upload Current File");
                 uploadButton.setEnabled(true);
-                updateProblemsList(toolWindow);
+                updateProblemsList(toolWindow, problemListViewerCarry);
             }catch (IOException e){
                 throw new RuntimeException(e);
             }
@@ -200,7 +201,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
 
         private final JComboBox<String> compilerSelector = new ComboBox<>();
 
-        private JPanel ProblemsPanel(ToolWindow toolWindow){
+        private JPanel ProblemsPanel(ToolWindow toolWindow, JEditorPane problemListViewerCarry){
             JPanel problemsPanel = new JPanel();
 
             HTMLEditorKit kit = new HTMLEditorKit();
@@ -242,7 +243,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
             compilerSelector.setEnabled(false);
             compilerSelector.setEditable(false);
             upload.setAlignmentX(Component.CENTER_ALIGNMENT);
-            upload.addActionListener(e -> uploadFile(toolWindow, upload));
+            upload.addActionListener(e -> uploadFile(toolWindow, upload, problemListViewerCarry));
             idSearch.addActionListener(e -> searchProblem(problemId, toolWindow, idSearch, upload));
             idTextField.add(problemId);
             idTextField.add(idSearch);
@@ -373,7 +374,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
         private final JEditorPane problemListViewer = new JEditorPane();
         private final JBScrollPane jScrollPaneList = new JBScrollPane(problemListViewer);
 
-        public void updateProblemsList(ToolWindow toolWindow){
+        public void updateProblemsList(ToolWindow toolWindow, JEditorPane problemListViewerCarry){
             try{
                 String body = String.format(problemsListHtml, net.getProblemList(Files.readString(net.cookiePath), toolWindow));
                 body = body.replace("<i class='fa fa-thumbs-o-up fa-fw' style='color: green;'></i>",
@@ -392,7 +393,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
                         "<span class='label label-primary' style='color: #1E90FF; font-weight: bold'>");
                 body = body.replace("<a",
                         "<a style='color: white; font-weight: bold'");
-                problemListViewer.setText(body);
+                problemListViewerCarry.setText(body);
             }catch(IOException e){
                 throw new RuntimeException(e);
             }
@@ -415,7 +416,7 @@ public class JutgeToolWindow implements ToolWindowFactory {
             problemListViewer.setEditable(false);
             problemListViewer.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            updateProblemsList(toolWindow);
+            updateProblemsList(toolWindow, problemListViewer);
 
             problemsListPanel.add(jScrollPaneList);
 
