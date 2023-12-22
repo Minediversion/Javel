@@ -40,6 +40,7 @@ Plopez was a great source of knowledge and inspiration.
 ## Known Issues
 
 WebView panels height might be too small or too large, depends on the screen.
+Problems with point ratings are broken and submission doesn't load
 
 ## Contribute to the extension!
 Repository is public and meant to be tailored to individual needs or adapted to other IDEs.
