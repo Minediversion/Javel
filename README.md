@@ -1,6 +1,6 @@
 # Javel - Jutge.org integration
 
-Javel is an IntelliJ Based IDEs made by Marc extension that provides integration for the Jutge.org coding website.  
+Javel is an IntelliJ Based IDEs extension made by Marc  that provides integration for the Jutge.org coding website.  
 Especially useful for anyone that wants an uglier, but faster way to access and do Jutge.org's problems.
 
 ## Special Thanks
