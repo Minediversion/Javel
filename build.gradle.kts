@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.minediversion"
-version = "1.5"
+version = "1.7"
 
 repositories {
     mavenCentral()
@@ -44,7 +44,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("222")
-        untilBuild.set("232.*")
+        untilBuild.set("243.*")
     }
 
     signPlugin {
